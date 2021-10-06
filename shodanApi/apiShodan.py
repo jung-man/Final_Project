@@ -2,6 +2,7 @@ import shodan
 import sys
 import re
 import csv
+from check_proxyLogon import Check_proxyLogon
 # from data_process import Table
 
 class ShodanApi:
@@ -12,7 +13,7 @@ class ShodanApi:
     def get_Infor(self):
         regexOfDomain = "(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]"
         regexOfCVE = "[^/=]CVE-\d{4}-\d{4,7}'"
-
+        
         try:
         # Setup the api
             api = shodan.Shodan(self.apiKey)
@@ -26,7 +27,7 @@ class ShodanApi:
                     break
                 else:
                     api_complete = api.search(query='Exchange server country:"VN" port:"443"', page=1+i)
-                    for service in api_complete['matches']:
+                    for service in api_complete['matches']:                        
                         # print("IP: ", service['ip_str'])
                         thisdict["IP"] = service['ip_str']
 
@@ -48,9 +49,14 @@ class ShodanApi:
                             thisdict["Vulns"] = " "
                         #     print("Not have vuln !!!")
                         # print("==========================")
+                        
+                        #check proxyLogon
+                        for i in thisdict["IP"]:
+                            check = Check_proxyLogon(i)                            
+                            thisdict["ProxyLogon"] = check.check_proxyLogon()
 
                         csvWriter = csv.writer(csvFileObj)
-                        csvWriter.writerow([ thisdict["IP"],thisdict["Domain"], thisdict["Vulns"]])
+                        csvWriter.writerow([thisdict["IP"],thisdict["Domain"], thisdict["Vulns"], thisdict["ProxyLogon"]])
                         # csvWriter.writerow([thisdict["IP"]])
             csvFileObj.close()
             # input_csv(thisdict["Domain"], thisdict["IP"], thisdict["Vulns"])

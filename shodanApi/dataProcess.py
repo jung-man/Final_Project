@@ -18,10 +18,12 @@ class Table:
         list_IP = []
         list_domain = []
         list_CVE = []
+        list_proxyLogon = []
         for i in ex1:
             list_IP.append(str(i[0]))
             list_domain.append(str(i[1]))
             list_CVE.append(str(i[2]))
+            list_proxyLogon.append(str(i[3]))
 
         ## Get ip
         lisOf_ip = []
@@ -46,9 +48,14 @@ class Table:
                 com_domain = re.findall(regexOfDomain,domain)
                 first_domain.append(com_domain[0])
 
+        #Get infor proxyLogon
+        logon = []
+        for ex in list_proxyLogon:
+            logon.append(ex)
+
         # Put first elements of api to table
         for i in range(0,50):
-            self.data.append([lisOf_ip[i],first_domain[i],repre_cve[i]])
+            self.data.append([lisOf_ip[i],first_domain[i],repre_cve[i],logon[i]])
 
         table = SingleTable(self.data)
         print(table.table)
