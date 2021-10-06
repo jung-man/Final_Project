@@ -2,7 +2,6 @@ import shodan
 import sys
 import re
 import csv
-from check_proxyLogon import Check_proxyLogon
 # from data_process import Table
 
 class ShodanApi:
@@ -26,7 +25,8 @@ class ShodanApi:
                 if api_complete['matches'] == "[]":
                     break
                 else:
-                    api_complete = api.search(query='Exchange server country:"VN" port:"443"', page=1+i)
+                    # api_complete = api.search(query='Exchange server country:"VN" port:"443"', page=1+i)
+                    api_complete = api.search(query=self.query, page=1+i)
                     for service in api_complete['matches']:                        
                         # print("IP: ", service['ip_str'])
                         thisdict["IP"] = service['ip_str']
@@ -49,14 +49,9 @@ class ShodanApi:
                             thisdict["Vulns"] = " "
                         #     print("Not have vuln !!!")
                         # print("==========================")
-                        
-                        #check proxyLogon
-                        for i in thisdict["IP"]:
-                            check = Check_proxyLogon(i)                            
-                            thisdict["ProxyLogon"] = check.check_proxyLogon()
-
+                    
                         csvWriter = csv.writer(csvFileObj)
-                        csvWriter.writerow([thisdict["IP"],thisdict["Domain"], thisdict["Vulns"], thisdict["ProxyLogon"]])
+                        csvWriter.writerow([thisdict["IP"],thisdict["Domain"], thisdict["Vulns"]])
                         # csvWriter.writerow([thisdict["IP"]])
             csvFileObj.close()
             # input_csv(thisdict["Domain"], thisdict["IP"], thisdict["Vulns"])
@@ -66,10 +61,10 @@ class ShodanApi:
  
 
 # def main():
-#     table = Table()
+#     # table = Table()
 #     cmd = 'Exchange server country:"VN" port:"443"'
-#     api = shodanApi(cmd)
+#     api = ShodanApi(cmd)
 #     api.get_Infor()
-#     table.table_csv()
+#     # table.table_csv()
 # if __name__ == '__main__':
 #     main()
